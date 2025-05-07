@@ -18,7 +18,7 @@ def get_youtube_video(video_url: str) -> str:
     Returns:
         The path of the downloaded video file.
     """
-    VIDEOS_DIRECTORY_CACHE = "./database/videos"
+    VIDEOS_DIRECTORY_CACHE = "./data/videos"
 
     you_tube_proxy = YouTube(video_url)
     you_tube_stream = you_tube_proxy.streams.get_highest_resolution()
