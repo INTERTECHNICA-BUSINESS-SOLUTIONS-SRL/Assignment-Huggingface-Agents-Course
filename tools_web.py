@@ -323,59 +323,67 @@ def process_results_url_links(url_links: List[str], url_scores: List[float], que
     logging.debug(f"URL scores: \n{url_scores}\n")
     logging.debug(f"Query: \n{query}\n")
 
-    for index in range(len(url_links)):
-        try:
-            url_link = url_links[index]
-            url_score = url_scores[index]
-
-            logging.debug(f"Current processed link: {url_link}")
-            logging.debug(f"Current processed score: {url_score}")
-
-            page_content = get_web_page_content(url_link)
-
-            current_confidence, current_response = analyze_content_strict_mode(page_content, query)
-            if current_confidence <= 0.33 :
-                logging.warning("Since the strict mode analysis did not produce a confident response, we will evaluate the content in a loose mode.")
-                current_confidence, current_response = analyze_content_loose_mode(page_content, query)
-
-            if current_confidence > 0 and current_confidence >= last_meaningful_response_confidence:
-                content_relevance_flag = 1
-                if current_confidence == last_meaningful_response_confidence:
-                    # force relevance comparison
-                    content_relevance_flag = compare_content_relevance(
-                        last_meaningful_page_content, page_content, query)
-
-                if content_relevance_flag == 1:
-                    last_meaningful_response_confidence = current_confidence
-                    last_meaningful_response = current_response
-                    last_meaningful_page_content = page_content
-
-                    logging.debug(
-                        f"Using new meaningful response: \n{last_meaningful_response}\n with confidence {current_confidence}")
-                else:
-                    logging.debug(f"Content relevance is low and will be skipped.")
-            else:
-                logging.debug(f"Response confidence is low and will be skipped.")
-
-            # !!!! Sleep in order to avoid quota issues
-            logging.debug(f"Sleeping for preventing quota usage.")            
-            time.sleep(20)
-        except Exception as e:
-            logging.error(f"""
-                Failed to analyze the content of the web page:              
-                URL: {url_link},
-                Score: {url_score},
-                query: {query},
-                exception: {str(e)}
-                \n
-            """)
-
-            continue
+    for analyze_content_mode in [analyze_content_strict_mode, analyze_content_loose_mode]:
+        logging.debug(f"Processing URL links using analyze content mode: {analyze_content_mode.__name__}")
         
+        for index in range(len(url_links)):
+            try:
+                url_link = url_links[index]
+                url_score = url_scores[index]
+
+                logging.debug(f"Current processed link: {url_link}")
+                logging.debug(f"Current processed score: {url_score}")
+
+                page_content = get_web_page_content(url_link)
+
+                current_confidence, current_response = analyze_content_mode(page_content, query)
+
+                if current_confidence > 0 and current_confidence >= last_meaningful_response_confidence:
+                    content_relevance_flag = 1
+                    if current_confidence == last_meaningful_response_confidence:
+                        # force relevance comparison
+                        content_relevance_flag = compare_content_relevance(
+                            last_meaningful_page_content, page_content, query)
+
+                    if content_relevance_flag == 1:
+                        last_meaningful_response_confidence = current_confidence
+                        last_meaningful_response = current_response
+                        last_meaningful_page_content = page_content
+
+                        logging.debug(
+                            f"Using new meaningful response: \n{last_meaningful_response}\n with confidence {current_confidence}")
+                    else:
+                        logging.debug(f"Content relevance is low and will be skipped.")
+                else:
+                    logging.debug(f"Response confidence is low and will be skipped.")
+
+                # !!!! Sleep in order to avoid quota issues
+                logging.debug(f"Sleeping for preventing quota usage.")            
+                time.sleep(20)
+            except Exception as e:
+                logging.error(f"""
+                    Failed to analyze the content of the web page:              
+                    URL: {url_link},
+                    Score: {url_score},
+                    query: {query},
+                    exception: {str(e)}
+                    \n
+                """)
+
+                continue
+        
+        if (last_meaningful_response is not None) and (last_meaningful_response_confidence > 0.33):
+            logging.debug(f"Found meaningful response with confidence {last_meaningful_response_confidence} using analyze content mode: {analyze_content_mode.__name__}")
+            logging.debug(f"Found meaningful response: \n{last_meaningful_response}\n")
+            
+            # if the response is found, we can stop the processing
+            return last_meaningful_response
+            
+            
     if last_meaningful_response is None:
         logging.warning(f"No relevant answer has been found while processing the URL links. We will use a generic no results answer.")
         last_meaningful_response = "No results have been found, the processing has failed."
-    
+        
     return last_meaningful_response
 
 # ----------------------------------- Search WEB tool section -----------------------------------
