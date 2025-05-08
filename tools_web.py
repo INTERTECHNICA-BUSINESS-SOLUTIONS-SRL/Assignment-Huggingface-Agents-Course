@@ -422,14 +422,15 @@ def search_web(query: str = None) -> str:
 # prevents the LLM for treating this search as a web search, thus using a more natural language query
 
 
-def search_knowledge_base(query: str = None) -> str:
+def search_web_natural_language(query: str = None) -> str:
     """
-    Searches a knowledge base in depth in regards with a topic. 
+    Searches the web in regards with a topic. 
+    IF you don't understand a question, use this to clarify it (for example if it is missing information).
     The question must be expressed briefly in natural language.
     This can be used as a tool. 
 
     Args:
-        query: the query used to search the knowledge base, must be in natural language, concise and precise.
+        query: the query used to search the web, must be in natural language, concise and precise. Do not use web search queries.
         Always provide the query.
 
     Returns:
@@ -438,7 +439,7 @@ def search_knowledge_base(query: str = None) -> str:
     if query is None:
         return None
 
-    logging.debug(f"Received request to search knowledge base proxy with the query: {query}]")
+    logging.debug(f"Received request to search web in natural language with the query: {query}]")
     optimized_query = get_optimized_web_query(query)
     logging.debug(f"Searching with optimized query: {optimized_query}]")
 

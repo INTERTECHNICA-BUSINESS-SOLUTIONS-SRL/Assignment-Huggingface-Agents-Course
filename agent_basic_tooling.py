@@ -17,7 +17,7 @@ from tools_audio import get_transcribed_audio_file_data
 from tools_excel import get_excel_file_data
 from tools_image import get_requested_information_from_image
 from tools_python import get_python_file_data
-from tools_web import search_knowledge_base, search_web
+from tools_web import search_web_natural_language, search_web
 from tools_youtube import get_analysis_information_from_youtube_video
 
 
@@ -47,7 +47,7 @@ def get_tools():
         get_transcribed_audio_file_data,
         get_requested_information_from_image,
         get_analysis_information_from_youtube_video,
-        search_knowledge_base
+        search_web_natural_language
     ]
 
     return tools
@@ -119,7 +119,7 @@ def assistant(state: AgentState) -> AgentState:
         content=f"""
             <role>
                 You are a very capable AI Agent used for complex task specified in natural language.
-                You can analyse documents and run computations with provided tools:
+                You can analyse documents and perform various operations with provided tools:
             <role>
             <tools>
                 You are provided with the following tools:
@@ -127,9 +127,10 @@ def assistant(state: AgentState) -> AgentState:
 {get_tools_description()}.
 ---
                 You will call any tools as many times as needed in order to fulfill a requested task.
+                If you are missing information, you can use the tools to find it.
                 Always prioritize the available tools over your calculations and reasoning.
                 If an input file is provided, analyze the input file using the best tool provided.
-                If you cannot analyze the file with the specified tool, answer that you cannot process the task.
+                If you cannot analyze the information with any tool, answer that you cannot process the task.
                 Use the tools outcome to assemble the final answer.
             </tools>
             <input_file>
