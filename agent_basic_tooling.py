@@ -1,8 +1,6 @@
 # Copyright (c) Iuga Marin
 # This file is part of the HuggingFace free AI Agents course assignment.
 # It contains the implementation of an AI agent with basic tooling capabilities.
-
-from inspect import signature
 from typing import Annotated, Optional, TypedDict
 
 from langchain_core.messages import AnyMessage, HumanMessage, SystemMessage
@@ -12,14 +10,15 @@ from langgraph.prebuilt import ToolNode, tools_condition
 
 from setup import get_baseline_LLM
 
-from tools_arithmetic import add_values
+from library_tools import get_tools_description
+
+from tools_arithmetic import add_values, add_multiple_values, subtract_values
 from tools_audio import get_transcribed_audio_file_data
-from tools_excel import get_excel_file_data
+from tools_excel import process_EXCEL_file
 from tools_image import get_requested_information_from_image
 from tools_python import get_python_file_data
-from tools_web import search_web_natural_language, search_web
+from tools_web import search_web_natural_language
 from tools_youtube import get_analysis_information_from_youtube_video
-
 
 class AgentState(TypedDict):
     """
@@ -40,9 +39,10 @@ def get_tools():
     """
     tools = [
         add_values,
-        get_excel_file_data,
+        add_multiple_values,
+        subtract_values,
+        process_EXCEL_file,
         get_python_file_data,
-        get_excel_file_data,
         get_python_file_data,
         get_transcribed_audio_file_data,
         get_requested_information_from_image,
@@ -51,39 +51,6 @@ def get_tools():
     ]
 
     return tools
-
-
-def get_tool_description(tool):
-    """
-    Generate a formatted description of a given tool function.
-    This function extracts the name, signature, and docstring of the provided tool
-    function and combines them into a single formatted string.
-    Args:
-        tool (Callable): The tool function to describe. It must be a callable object.
-    Returns:
-        str: A formatted string containing the tool's name, signature, and docstring.
-    """
-    tool_name = tool.__name__
-    tool_signature = signature(tool)
-    tool_doc = tool.__doc__.strip("\n").strip("\n")
-
-    tool_description = f"{tool_name}{tool_signature}\n{tool_doc}"
-
-    return tool_description
-
-
-def get_tools_description() -> str:
-    """
-    Retrieves a description of all available tools.
-    Returns:
-        str: A string containing descriptions of all tools, separated by newlines.
-    """
-    tools = get_tools()
-    tools_description = ""
-    for tool in tools:
-        tools_description = tools_description + "\n" + get_tool_description(tool)
-
-    return tools_description
 
 
 def create_tooling_LLM():
@@ -124,7 +91,7 @@ def assistant(state: AgentState) -> AgentState:
             <tools>
                 You are provided with the following tools:
 ---
-{get_tools_description()}.
+{get_tools_description(get_tools())}
 ---
                 You will call any tools as many times as needed in order to fulfill a requested task.
                 If you are missing information, you can use the tools to find it.

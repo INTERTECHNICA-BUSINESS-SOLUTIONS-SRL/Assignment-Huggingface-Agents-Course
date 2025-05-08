@@ -62,7 +62,8 @@ class AgentFinalAnswer():
             </intermediate_answer>
             <rules>
                 * If you are asked for a number, provide just the numeric value respecting the formatting if specified.
-                * If you are asked or using a currency value, append the currency symbol at the beginning of the number.
+                * If you are asked or using a currency value, do not use the currency symbol - use just the number.
+                * If you are asked for a string provide the string without quotes.
                 * Do not add any trailing spaces and new lines.
             </rules>        
         """
