@@ -13,7 +13,7 @@ from setup import get_baseline_LLM
 from library_tools import get_tools_description
 
 from tools_arithmetic import add_values, add_multiple_values, subtract_values
-from tools_audio import get_transcribed_audio_file_data
+from tools_audio import get_analysis_information_from_audio_file
 from tools_excel import process_EXCEL_file
 from tools_image import get_requested_information_from_image
 from tools_python import get_python_file_data
@@ -43,8 +43,7 @@ def get_tools():
         subtract_values,
         process_EXCEL_file,
         get_python_file_data,
-        get_python_file_data,
-        get_transcribed_audio_file_data,
+        get_analysis_information_from_audio_file,
         get_requested_information_from_image,
         get_analysis_information_from_youtube_video,
         search_web_natural_language
