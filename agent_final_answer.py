@@ -64,6 +64,7 @@ class AgentFinalAnswer():
                 * If you are asked for a number, provide just the numeric value respecting the formatting if specified.
                 * If you are asked or using a currency value, do not use the currency symbol - use just the number.
                 * If you are asked for a string provide the string without quotes.
+                * When you are asked for a list, provide the list in a comma separated format without any quotes. Add a space after each comma.
                 * Do not add any trailing spaces and new lines.
             </rules>        
         """
