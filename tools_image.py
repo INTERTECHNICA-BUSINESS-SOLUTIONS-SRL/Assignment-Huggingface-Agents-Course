@@ -1,3 +1,6 @@
+# Copyright (c) Iuga Marin
+# This file is part of the HuggingFace free AI Agents course assignment.
+# It contains utility functions for analyzing images and extracting information based on queries.
 import logging
 import mimetypes
 
@@ -5,11 +8,6 @@ from setup import get_vision_LLM
 from library_tools import get_file_data_base_64
 
 from langchain_core.messages import HumanMessage
-
-# ----------------------------------- Image analysis tool section -----------------------------------
-"""
-    Loads the content of an image file as a base64 encoded information
-"""
 
 
 def get_requested_information_from_image(file_name: str, query: str) -> str:
@@ -26,10 +24,8 @@ def get_requested_information_from_image(file_name: str, query: str) -> str:
     base64_image_data = get_file_data_base_64(file_name)
     mime_type = mimetypes.guess_type(file_name)[0]
 
-
     logging.debug(f"Using the image information extraction tool on the file: {file_name}")
     logging.debug(f"Inferred mime type is: {mime_type}")
-
 
     image_analysis_messages = HumanMessage(content=[
         {
@@ -41,6 +37,7 @@ def get_requested_information_from_image(file_name: str, query: str) -> str:
                 <task>
                     We will provide you the data for an image.
                     Perform the query exactly as specified in instructions.
+                    Unless asked otherwise, explain in detail the moves you analyzed and how you reached the conclusion.
                 </task>
                 <query>
                     {query}
@@ -60,5 +57,7 @@ def get_requested_information_from_image(file_name: str, query: str) -> str:
     output = vision_llm.invoke(
         [image_analysis_messages]
     )
+
+    logging.debug(f"Obtained content is: {output.content}")
 
     return output.content

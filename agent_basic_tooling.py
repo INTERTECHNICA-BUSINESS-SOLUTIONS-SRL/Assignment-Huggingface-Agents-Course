@@ -16,6 +16,7 @@ from tools_arithmetic import add_values, add_multiple_values, subtract_values
 from tools_audio import get_analysis_information_from_audio_file
 from tools_excel import process_EXCEL_file
 from tools_image import get_requested_information_from_image
+from tools_chess import get_chess_analysis_information_from_image
 from tools_python import get_python_file_data
 from tools_web import search_web_natural_language
 from tools_youtube import get_analysis_information_from_youtube_video
@@ -45,6 +46,7 @@ def get_tools():
         get_python_file_data,
         get_analysis_information_from_audio_file,
         get_requested_information_from_image,
+        get_chess_analysis_information_from_image,
         get_analysis_information_from_youtube_video,
         search_web_natural_language
     ]
