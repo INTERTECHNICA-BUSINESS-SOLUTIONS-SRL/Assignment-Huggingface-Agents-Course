@@ -1,3 +1,7 @@
+# Copyright (c) Iuga Marin
+# This file is part of the HuggingFace free AI Agents course assignment.
+# It contains utility functions for audio transcription and analysis.
+
 import logging
 import mimetypes
 

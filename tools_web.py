@@ -1,22 +1,35 @@
+# Copyright (c) Iuga Marin
+# This file is part of the HuggingFace free AI Agents course assignment.
+# It contains utility functions for web search, content retrieval, and analysis.
+
 import json
 import logging
 import re
 import time
-from typing import Any, Dict, List, Tuple
+from typing import List, Tuple
 
 import markdownify
 import requests
-
 from fake_useragent import UserAgent
+
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain_tavily import TavilySearch
 
-from setup import get_content_relevance_LLM, get_loose_content_analysis_LLM, get_query_optimization_LLM, get_strict_content_analysis_LLM
-
-# ----------------------------------- Query optimization tool section -----------------------------------
+from setup import get_content_relevance_LLM
+from setup import get_loose_content_analysis_LLM
+from setup import get_query_optimization_LLM
+from setup import get_strict_content_analysis_LLM
 
 
 def get_optimized_web_query(query: str) -> str:
+    """
+    Optimizes a given web search query to improve relevance and effectiveness for web engine searches.
+    Args:
+        query (str): The initial web search query to be optimized.
+    Returns:
+        str: The optimized web search query.
+    """
+
     query_optimization_llm = get_query_optimization_LLM()
 
     logging.debug(f"Query optimization tool is called.")
@@ -48,8 +61,6 @@ def get_optimized_web_query(query: str) -> str:
 
     return optimized_query
 
-# ----------------------------------- Web search (DuckDuckGo) tool section -----------------------------------
-
 
 def get_web_search_results_links_duckduckgo(query: str) -> str:
     """
@@ -72,8 +83,6 @@ def get_web_search_results_links_duckduckgo(query: str) -> str:
         search_results_links.append(search_result_item["link"])
 
     return search_results_links
-
-# ----------------------------------- Web search (Tavily) tool section -----------------------------------
 
 
 def get_web_search_results_links_tavily(query: str) -> str:
@@ -107,8 +116,6 @@ def get_web_search_results_links_tavily(query: str) -> str:
     logging.debug(f"Obtained Tavily search results scores \n {results_scores} \n")
 
     return results_links, results_scores
-
-# ----------------------------------- WEB Page content extraction tool section -----------------------------------
 
 
 def get_web_page_content(url: str) -> str:
@@ -144,8 +151,6 @@ def get_web_page_content(url: str) -> str:
     logging.debug(f"Content successfully transformed to markdown.")
 
     return page_content
-
-# ----------------------------------- Content meaningfulness comparison -----------------------------------
 
 
 def compare_content_relevance(source_content: str, target_content: str, query: str) -> int:
@@ -201,10 +206,22 @@ def compare_content_relevance(source_content: str, target_content: str, query: s
 
     return relevance_flag
 
-# ----------------------------------- Content analysis tool section -----------------------------------
-
 
 def analyze_content_strict_mode(page_content: str, query: str) -> Tuple[float, str]:
+    """
+    Analyzes the provided page content in strict mode to answer a given query.
+    This function uses a language model to evaluate the relevance and accuracy of the page content
+    in response to the specified query. It returns a confidence score (between 0 and 1) indicating
+    how well the content answers the query, along with the generated response.
+    Args:
+        page_content (str): The textual content of the page to be analyzed.
+        query (str): The question or query to be answered based on the page content.
+    Returns:
+        Tuple[float, str]: A tuple containing:
+            - confidence (float): A score between 0 and 1 representing the confidence in the response.
+            - response (str): The answer to the query based strictly on the provided content.
+    """
+
     logging.debug(f"Strict mode content analysis tool called.")
 
     content_analysis_prompt = f"""
@@ -255,7 +272,21 @@ def analyze_content_strict_mode(page_content: str, query: str) -> Tuple[float, s
 
     return confidence, response
 
+
 def analyze_content_loose_mode(page_content: str, query: str) -> Tuple[float, str]:
+    """
+    Analyzes the provided page content in relation to a given query using a language model in 'loose mode'.
+    This function evaluates how well the page content can answer the specified query, inferring answers when necessary.
+    It returns both a confidence score (between 0 and 1) indicating the reliability of the response, and the response itself.
+    Args:
+        page_content (str): The textual content of the page to be analyzed.
+        query (str): The question or query to be evaluated against the page content.
+    Returns:
+        Tuple[float, str]: A tuple containing:
+            - confidence (float): A score between 0 and 1 representing the confidence in the response.
+            - response (str): The answer generated based on the page content and query.
+    """
+
     logging.debug(f"Loose mode content analysis tool called.")
 
     content_analysis_prompt = f"""
@@ -310,10 +341,19 @@ def analyze_content_loose_mode(page_content: str, query: str) -> Tuple[float, st
     return confidence, response
 
 
-# ----------------------------------- Processing URL Links tool section -----------------------------------
-
-
 def process_results_url_links(url_links: List[str], url_scores: List[float], query: str) -> str:
+    """
+    Processes a list of URL links and their associated scores to find the most relevant response to a given query.
+    This function iterates through the provided URLs, analyzes the content of each page using different content analysis modes,
+    and selects the response with the highest confidence score that is relevant to the query. If no sufficiently relevant response
+    is found, a generic message is returned.
+    Args:
+        url_links (List[str]): A list of URLs to be processed.
+        url_scores (List[float]): A list of scores corresponding to the relevance or quality of each URL.
+        query (str): The query string to find relevant information for.
+    Returns:
+        str: The most relevant response found based on the query and URL content, or a generic message if no relevant answer is found.
+    """
     last_meaningful_response_confidence = -1
     last_meaningful_response = None
     last_meaningful_page_content = None
@@ -325,7 +365,7 @@ def process_results_url_links(url_links: List[str], url_scores: List[float], que
 
     for analyze_content_mode in [analyze_content_strict_mode, analyze_content_loose_mode]:
         logging.debug(f"Processing URL links using analyze content mode: {analyze_content_mode.__name__}")
-        
+
         for index in range(len(url_links)):
             try:
                 url_link = url_links[index]
@@ -358,7 +398,7 @@ def process_results_url_links(url_links: List[str], url_scores: List[float], que
                     logging.debug(f"Response confidence is low and will be skipped.")
 
                 # !!!! Sleep in order to avoid quota issues
-                logging.debug(f"Sleeping for preventing quota usage.")            
+                logging.debug(f"Sleeping for preventing quota usage.")
                 time.sleep(20)
             except Exception as e:
                 logging.error(f"""
@@ -371,22 +411,21 @@ def process_results_url_links(url_links: List[str], url_scores: List[float], que
                 """)
 
                 continue
-        
+
         if (last_meaningful_response is not None) and (last_meaningful_response_confidence > 0.33):
-            logging.debug(f"Found meaningful response with confidence {last_meaningful_response_confidence} using analyze content mode: {analyze_content_mode.__name__}")
+            logging.debug(
+                f"Found meaningful response with confidence {last_meaningful_response_confidence} using analyze content mode: {analyze_content_mode.__name__}")
             logging.debug(f"Found meaningful response: \n{last_meaningful_response}\n")
-            
+
             # if the response is found, we can stop the processing
             return last_meaningful_response
-            
-            
-    if last_meaningful_response is None:
-        logging.warning(f"No relevant answer has been found while processing the URL links. We will use a generic no results answer.")
-        last_meaningful_response = "No results have been found, the processing has failed."
-        
-    return last_meaningful_response
 
-# ----------------------------------- Search WEB tool section -----------------------------------
+    if last_meaningful_response is None:
+        logging.warning(
+            f"No relevant answer has been found while processing the URL links. We will use a generic no results answer.")
+        last_meaningful_response = "No results have been found, the processing has failed."
+
+    return last_meaningful_response
 
 
 def search_web(query: str = None) -> str:
@@ -416,10 +455,6 @@ def search_web(query: str = None) -> str:
     logging.debug(f"Received search response: {content}]")
 
     return content
-
-# ----------------------------------- Search knowledge base tool section -----------------------------------
-# acts as a proxy for web search
-# prevents the LLM for treating this search as a web search, thus using a more natural language query
 
 
 def search_web_natural_language(query: str = None) -> str:

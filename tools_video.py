@@ -1,11 +1,13 @@
+# Copyright (c) Iuga Marin
+# This file is part of the HuggingFace free AI Agents course assignment.
+# It contains utility functions for video file transcription and analysis.
+
 import logging
 import mimetypes
 
 from library_tools import get_base_64_file_data_by_path
 from setup import get_video_LLM
 from langchain_core.messages import HumanMessage
-
-# ----------------------------------- Video transcription tool section -----------------------------------
 
 
 def get_transcribed_video(video_file_path: str) -> str:
@@ -54,10 +56,8 @@ def get_transcribed_video(video_file_path: str) -> str:
 
     transcription_content = output.content
     logging.debug(f"Obtained video transcription content: {transcription_content}")
-    
-    return transcription_content
 
-# ----------------------------------- Video analysis tool section -----------------------------------
+    return transcription_content
 
 
 def get_analysis_information_from_video(video_file_path: str, query: str) -> str:
@@ -114,5 +114,5 @@ def get_analysis_information_from_video(video_file_path: str, query: str) -> str
 
     analysis_content = output.content
     logging.debug(f"Obtained video analysis content: {analysis_content}")
-    
+
     return analysis_content

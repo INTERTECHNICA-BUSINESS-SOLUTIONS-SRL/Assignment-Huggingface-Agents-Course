@@ -1,6 +1,7 @@
 # Copyright (c) Iuga Marin
 # This file is part of the HuggingFace free AI Agents course assignment.
 # It contains utility functions for analyzing images and extracting information based on queries.
+
 import logging
 import mimetypes
 

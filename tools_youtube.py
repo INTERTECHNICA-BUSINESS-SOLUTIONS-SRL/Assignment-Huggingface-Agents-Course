@@ -1,11 +1,13 @@
+# Copyright (c) Iuga Marin
+# This file is part of the HuggingFace free AI Agents course assignment.
+# It contains utility functions for downloading and analyzing YouTube videos.
+
 import logging
 
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
 
 from tools_video import get_analysis_information_from_video
-
-# ----------------------------------- Youtube video download tool section -----------------------------------
 
 
 def get_youtube_video(video_url: str) -> str:
@@ -25,8 +27,6 @@ def get_youtube_video(video_url: str) -> str:
     video_file_path = you_tube_stream.download(VIDEOS_DIRECTORY_CACHE)
 
     return video_file_path
-
-# ----------------------------------- Youtube video analysis tool section -----------------------------------
 
 
 def get_analysis_information_from_youtube_video(youtube_video_url: str, query: str) -> str:

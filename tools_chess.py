@@ -1,6 +1,7 @@
 # Copyright (c) Iuga Marin
 # This file is part of the HuggingFace free AI Agents course assignment.
 # It contains utility functions for analyzing images and extracting information based on queries.
+
 import logging
 from setup import get_chess_analysis_LLM
 from tools_image import get_requested_information_from_image
@@ -76,7 +77,7 @@ def get_chess_analysis_information_from_image(file_name: str, query: str) -> str
             """
         }
     ])
-    
+
     chess_llm = get_chess_analysis_LLM()
 
     output = chess_llm.invoke(
