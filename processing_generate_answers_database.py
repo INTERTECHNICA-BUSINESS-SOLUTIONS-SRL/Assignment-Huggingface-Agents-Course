@@ -1,3 +1,8 @@
+# Copyright (c) Iuga Marin
+# This file is part of the HuggingFace free AI Agents course assignment.
+# This module manages the questions and answers databases for the assignment,
+# including loading, caching, validating, and updating answers with agentic traces.
+
 import os
 import json
 import time
