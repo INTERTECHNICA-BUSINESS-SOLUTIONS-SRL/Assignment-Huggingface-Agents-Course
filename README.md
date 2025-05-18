@@ -18,3 +18,5 @@ This makes the project an ideal starting point for anyone interested in building
 
 Ultimately, this repository captures the essence of the HuggingFace Agents Course, also showcasing the power and potential of modern AI frameworks like LangGraph. 
 It stands as a testament to the future of autonomous systems, demonstrating how intelligent agents can effectively address diverse, real-world challenges with precision and scalability.
+
+![image](https://github.com/user-attachments/assets/f21632cd-8f00-4a39-b3ad-2500f753748f)
