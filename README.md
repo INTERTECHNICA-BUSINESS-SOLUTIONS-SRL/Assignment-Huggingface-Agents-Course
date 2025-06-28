@@ -9,7 +9,7 @@ Central to this implementation is a modular design philosophy, where each compon
 This approach allows the agent to seamlessly switch between tasks such as arithmetic calculations, image processing, audio analysis, video manipulation, chess strategy, Excel data operations, Python scripting, and integration with Hugging Face datasets. 
 This versatility makes it a compelling choice for developers aiming to build robust, scalable AI systems.
 
-Efficiency is a core consideration in this project. The agent is equipped with a response caching mechanism, which significantly reduces latency for frequently asked questions, enhancing the overall user experience while minimizing computational overhead. 
+Efficiency is a core consideration in this project. The agent is equipped with a response caching mechanism, which significantly reduces latency for frequently asked questions, while minimizing computational overhead. 
 This approach aligns closely with the course's emphasis on creating practical, production-ready AI solutions. 
 LangGraph further amplifies this efficiency by providing a well-structured framework for connecting various tools and workflows, ensuring each module contributes effectively to the agent's overall capabilities.
 
